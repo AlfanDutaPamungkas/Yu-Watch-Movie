@@ -14,6 +14,9 @@ Yu'Watch Movie is a movie recommendation system that integrates machine learning
 - **Backend:** Flask
 - **Frontend:** Jinja Template
 
+## Demo
+Visit this <a href="https://drive.google.com/file/d/1ayHl2LwFXK3GGOjqlA8DejcdP7x2GV6U/view?usp=drive_link">link</a> for demo application.
+
 ## Contributing
 Contributions are welcome! Please fork this repository and submit a pull request for any improvements or bug fixes.
 
