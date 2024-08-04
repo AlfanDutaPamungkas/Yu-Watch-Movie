@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Yu'Watch Movie</title>
+    <link rel="stylesheet" href="static/css/register.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Account Form</h1>
+        <form id="settings-form" method="POST" enctype="multipart/form-data" action="{{ url_for('edit_acc') }}" novalidate>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="flash">{{ message }}</p>  
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {{ form.csrf_token }}
+            {{ form.email.label }} {{ form.email }}
+            {{ form.password.label }} {{ form.password }}
+            <button type="submit">SAVE CHANGES!</button>
+        </form>
+    </div>
+</body>
+</html>

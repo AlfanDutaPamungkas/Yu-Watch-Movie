@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Yu'Watch Movie</title>
+    <link rel="stylesheet" href="static/css/register.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ form.name.label }} {{ form.name }}
+            {{ form.email.label }} {{ form.email }}
+            {{ form.password.label }} {{ form.password }}
+            <button type="submit">SIGN ME UP!</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('login' ) }}">Login here</a></p>
+    </div>
+</body>
+
+</html>

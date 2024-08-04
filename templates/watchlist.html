@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Watchlist - Yu'Watch Movie</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="#">Trending</a></li>
+            <li><a href="{{ url_for('watchlist') }}">Watchlist</a></li>
+            <li class="avatar-dropdown">
+                <div class="avatar">
+                    <img id="user-avatar" src="{{ current_user.image }}" alt="Avatar">
+                </div>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('edit_profile') }}">Edit Profile</a>
+                    <a href="{{ url_for('edit_acc') }}">Edit Acc</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <br>
+    <br>
+
+    <main role="main">
+        <h1 class="title">Hello {{ current_user.name }}, Here's Your Watchlist 🎬</h1>
+
+        <div class="card-section">
+            {% for movie in watchlist %}
+            <div class="card" onclick="openModal('{{ movie.name }}')">
+                <img src="{{ movie.poster_path or '../static/assets/images/not_found.jpg' }}" alt="{{ movie.name }}" class="movie-poster">
+                <div class="card-content">
+                    <h3>{{ movie.name }}</h3>
+                </div>
+            </div>
+
+            <div id="modal-{{ movie.name }}" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('{{ movie.name }}')">&times;</span>
+                    <img src="{{ movie.poster_path or '../static/assets/images/not_found.jpg' }}" alt="{{ movie.name }}" class="movie-poster">
+                    <div class="modal-details">
+                        <h3>{{ movie.name }}</h3>
+                        {% if movie.vote_average is defined %}
+                        <p><strong>Vote Average:</strong> {{ movie.vote_average }}</p>
+                        {% endif %}
+                        {% if movie.vote_count is defined %}
+                        <p><strong>Vote Count:</strong> {{ movie.vote_count }}</p>
+                        {% endif %}
+                        {% if movie.popularity is defined %}
+                        <p><strong>Popularity:</strong> {{ movie.popularity }}</p>
+                        {% endif %}
+                        {% if movie.genres is defined %}
+                        <p><strong>Genres:</strong> {{ movie.genres }}</p>
+                        {% endif %}
+                        {% if movie.release_date is defined %}
+                        <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                        {% endif %}
+                        {% if movie.production_companies is defined %}
+                        <p><strong>Production Companies:</strong> {{ movie.production_companies }}</p>
+                        {% endif %}
+                        {% if movie.overview is defined %}
+                        <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                        {% endif %}
+                        <form action="{{ url_for('remove_from_watchlist') }}" method="post">
+                            <input type="hidden" name="movie_title" value="{{ movie.name }}">
+                            <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <div class="footer">
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <p>&copy; 2024 Yu'Watch Movie. All rights reserved.</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

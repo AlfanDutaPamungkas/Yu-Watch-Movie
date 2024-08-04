@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Yu'Watch Movie</title>
+    <link rel="stylesheet" href="static/css/login.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="flash">{{ message }}</p>  
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {{ form.hidden_tag() }}
+            {{ form.email.label }} {{ form.email }}
+            {{ form.password.label }} {{ form.password }}
+            <button type="submit">LET ME IN!</button>
+        </form>
+        <p>Don't have an account? <a href="{{ url_for('register' ) }}">Register here</a></p>
+    </div>
+</body>
+
+</html>
