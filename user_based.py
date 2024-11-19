@@ -22,20 +22,26 @@ def get_user_based_recommendations(user_id, n_recommendations=20, similarity_thr
     # Identifikasi film dengan rating sama
     user_ratings = user_item_matrix.loc[user_id]
     similar_users_based_on_ratings = set()
-    
+
     for film_id, rating in user_ratings.items():
         if rating > 0:
-            same_rating_users = df[(df['film_id'] == film_id) & (df['rating'] == rating) & (df['user_id'] != user_id)]['user_id']
+            # Cari pengguna lain dengan rating sama untuk film yang sama
+            same_rating_users = df[(df['film_id'] == film_id) & 
+                                   (df['rating'] == rating) & 
+                                   (df['user_id'] != user_id)]['user_id']
             similar_users_based_on_ratings.update(same_rating_users)
     
     # Filter pengguna dengan similarity di atas threshold
     similar_users = user_similarity_df[user_id][user_similarity_df[user_id] > similarity_threshold].sort_values(ascending=False)[1:11]  # 10 user paling mirip
     
-    # Tambahkan pengguna dengan rating sama, berikan bobot similarity rendah jika tidak ada similarity score
-    for similar_user in similar_users_based_on_ratings:
-        if similar_user not in similar_users.index:
-            similar_users.loc[similar_user] = 0.1  # Nilai default rendah untuk similarity
-    
+    # Hapus pengguna dengan rating sama jika mereka tidak memiliki cosine similarity tinggi
+    for user in similar_users_based_on_ratings:
+        if user not in similar_users.index:
+            continue  # Abaikan pengguna dengan rating sama jika mereka tidak memenuhi similarity_threshold
+        elif user_similarity_df[user_id][user] <= similarity_threshold:
+            similar_users = similar_users.drop(user, errors='ignore')  # Drop pengguna dengan cosine similarity rendah
+
+    # Lanjutkan dengan rekomendasi seperti biasa
     recommendations = []
     for film in user_ratings[user_ratings == 0].index:
         weighted_sum = 0

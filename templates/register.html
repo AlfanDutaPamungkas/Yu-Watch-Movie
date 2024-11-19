@@ -12,6 +12,13 @@
     <div class="container">
         <h2>Register</h2>
         <form method="post">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p style="font-style: italic; color: red;">{{ message }}</p>  
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
             {{ form.hidden_tag() }}
             {{ form.name.label }} {{ form.name }}
             {{ form.email.label }} {{ form.email }}

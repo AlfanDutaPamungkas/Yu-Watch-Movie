@@ -32,6 +32,14 @@
         .cancel-rating-btn:hover {
             background-color: #ff1a1a;
         }
+
+        .flash{
+            text-align: center;
+            font-style: italic;
+            font-weight: bold;
+            font-size: large;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +79,14 @@
         </div>
     </div>
     
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p class="flash">{{ message }}</p>  
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <h2 class="title">Hello {{ name }}, Here are the movies you liked</h2>
     <div class="card-section">
         {% for movie in liked_movies %}

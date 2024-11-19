@@ -162,6 +162,25 @@
                 event.target.style.display = "none";
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.star-rating input').forEach(function(ratingInput) {
+                ratingInput.addEventListener('change', function() {
+                    let form = this.closest('form');
+                    let submitButton = form.querySelector('button[type="submit"]');
+                    if (form.querySelector('input[name="rating"]:checked')) {
+                        submitButton.disabled = false;
+                    } else {
+                        submitButton.disabled = true;
+                    }
+                });
+            });
+    
+            document.querySelectorAll('form').forEach(function(form) {
+                let submitButton = form.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+            });
+        });
     </script>
 
 </body>

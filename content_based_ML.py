@@ -4,7 +4,14 @@ import ast
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import csr_matrix
-import difflib
+import re
+from fuzzywuzzy import process, fuzz
+
+def clean_text(text):
+    if pd.isna(text):
+        return ""
+    text = re.sub(r'[^\w\s]', '', text.lower())
+    return text
 
 def extract_names(params):
     if pd.isna(params):
@@ -13,7 +20,7 @@ def extract_names(params):
         return ""
     try:
         params_list = ast.literal_eval(params)
-        names = [name['name'] for name in params_list if 'name' in name]
+        names = [name['name'].lower() for name in params_list if 'name' in name]
         return ' '.join(names)
     except (ValueError, SyntaxError, TypeError):
         return ""
@@ -25,7 +32,7 @@ def extract_names_with_comma(params):
         return ""
     try:
         params_list = ast.literal_eval(params)
-        names = [name['name'] for name in params_list if 'name' in name]
+        names = [name['name'].lower() for name in params_list if 'name' in name]
         return ', '.join(names)
     except (ValueError, SyntaxError, TypeError):
         return ""
@@ -38,7 +45,7 @@ print("=========================================================================
 print(movies_data.head())
 
 print("\nFilling missing values...")
-selected_features = ["genres", "keywords", "production_companies", "tagline"]
+selected_features = ["genres", "keywords", "production_companies", "tagline", "overview"]
 for feature in selected_features:
     movies_data[feature] = movies_data[feature].fillna("")
     print(f"Filled missing values in {feature}")
@@ -47,9 +54,12 @@ print("=========================================================================
 print(movies_data[['original_title'] + selected_features].head())
 
 print("\nCleaning columns...")
+movies_data["original_title"] = movies_data["original_title"].str.lower().str.strip()
 movies_data["genres"] = movies_data["genres"].apply(extract_names)
 movies_data["keywords"] = movies_data["keywords"].apply(extract_names_with_comma)
 movies_data["production_companies"] = movies_data["production_companies"].apply(extract_names_with_comma)
+movies_data["tagline"] = movies_data["tagline"].apply(clean_text)
+
 print("Columns cleaned")
 print("First rows after cleaning columns:")
 print("====================================================================================")
@@ -63,7 +73,11 @@ print("=========================================================================
 print(combined_features.head())
 
 print("\nVectorizing features...")
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(
+    stop_words="english",
+    ngram_range=(1,2),
+    min_df=3
+)
 feature_vectors = vectorizer.fit_transform(combined_features)
 print(f"Features vectorized. Shape: {feature_vectors.shape}")
 print("First 5 rows of feature vectors (sparse matrix):")
@@ -73,10 +87,11 @@ print(feature_vectors[:5].toarray())
 feature_vectors_sparse = csr_matrix(feature_vectors)
 print("Converted to sparse matrix")
 
-def batch_cosine_similarity(feature_vectors, batch_size=1000):
+def batch_cosine_similarity(feature_vectors, target_idx, batch_size=1000):
+    similarity_scores = []
+    
     print("\nComputing cosine similarity in batches...")
     num_batches = int(np.ceil(feature_vectors.shape[0] / batch_size))
-    similarity_matrix = np.zeros((feature_vectors.shape[0], feature_vectors.shape[0]))
     
     for i in range(num_batches):
         start_idx = i * batch_size
@@ -86,8 +101,10 @@ def batch_cosine_similarity(feature_vectors, batch_size=1000):
         print(f"  Batch range: {start_idx} to {end_idx}")
         print(f"  Batch shape: {batch_vectors.shape}")
         
-        batch_similarity = cosine_similarity(batch_vectors, feature_vectors)
-        similarity_matrix[start_idx:end_idx] = batch_similarity
+        batch_similarity = cosine_similarity(feature_vectors[target_idx], batch_vectors)
+        similarity_scores.extend(
+            [(start_idx + idx, score) for idx, score in enumerate(batch_similarity[0])]
+        )
         
         print(f"  Batch similarity shape: {batch_similarity.shape}")
         print(f"  Sample similarity scores :")
@@ -96,27 +113,29 @@ def batch_cosine_similarity(feature_vectors, batch_size=1000):
         
         print(f"Batch {i+1}/{num_batches} processed")
     
-    return similarity_matrix
-
-# Panggil fungsi
-similarity_matrix = batch_cosine_similarity(feature_vectors_sparse)
-print("Cosine similarity computation completed")
-print("\nFirst 5x5 of similarity matrix:")
-print(similarity_matrix[:5, :5])
+    similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
+    return similarity_scores
 
 def get_movie_recommendations(movie_name):
     print(f"\nGetting recommendations for '{movie_name}'...")
-    all_titles = movies_data["original_title"].tolist()
-    find_close_match = difflib.get_close_matches(movie_name, all_titles)
+    all_titles = movies_data["original_title"].str.lower().tolist()
+    find_close_match = process.extractOne(
+        movie_name, 
+        all_titles,
+        score_cutoff=70
+    )
     if not find_close_match:
         print("No close matches found")
         return []
 
-    close_match = find_close_match[0]
+    close_match = find_close_match[0].lower().strip()
     print(f"Closest match found: '{close_match}'")
     index_of_the_movie = movies_data[movies_data.original_title == close_match].index[0]
-    similarity_score = list(enumerate(similarity_matrix[index_of_the_movie]))
-    sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)
+    similarity_scores = batch_cosine_similarity(
+        feature_vectors_sparse, target_idx=index_of_the_movie
+    )
+    
+    sorted_similar_movies = sorted(similarity_scores, key=lambda x: x[1], reverse=True)[:30]
     
     recommended_movies = []
     for movie in sorted_similar_movies[:30]:
@@ -146,4 +165,4 @@ if __name__ == "__main__":
     recommendations = get_movie_recommendations(user_movie)
     print("\nTop 30 recommendations:")
     for i, movie in enumerate(recommendations):
-        print(f"{i}. {movie['title']} (Similarity: {movie['similarity_score']:.4f})")
+        print(f"{i+1}. {movie['title']} (Similarity: {movie['similarity_score']:.4f})")

@@ -58,10 +58,11 @@ body {
 }
 
 .navbar {
+    background-color: white;
+    width: 100%;
     position: absolute;
-    top: 2vh;
-    right: 7.7vh;
-    padding: 10px 0;
+    /* right: 7.7vh; */
+    padding: 5px 0;
     display: flex;
     justify-content: flex-end;
     z-index: 2;
@@ -79,7 +80,7 @@ body {
 
 .navbar ul li a {
     text-decoration: none;
-    color: #fff;
+    color: black;
     font-size: 19px;
     padding: 5px 15px;
     transition: all 0.3s ease;
