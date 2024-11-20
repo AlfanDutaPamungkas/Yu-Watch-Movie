@@ -68,7 +68,6 @@
     <nav class="navbar">
         <ul>
             <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="#">Trending</a></li>
             <li><a href="{{ url_for('watchlist') }}">Watchlist</a></li>
             <li class="avatar-dropdown">
                 <div class="avatar">
@@ -86,8 +85,8 @@
     <br>
 
     <main role="main">
+        {% if (recommendations) | length > 0 %}
         <h2 class="title">Hello {{ current_user.name }}, Here are movie recommendations for you 🔥</h2>
-
         <div class="card-section">
             {% for movie in recommendations %}
             <div class="card" onclick="openModal('{{ movie.title }}')">
@@ -134,6 +133,10 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+        {% else %}
+            <h2 class="title">Sorry, the movie you entered could not be found in our database. Please double-check the title and try again</h2>
+        {% endif %}
         </div>
     </main>
 

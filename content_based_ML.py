@@ -5,7 +5,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import csr_matrix
 import re
-from fuzzywuzzy import process, fuzz
 
 def clean_text(text):
     if pd.isna(text):
@@ -36,6 +35,17 @@ def extract_names_with_comma(params):
         return ', '.join(names)
     except (ValueError, SyntaxError, TypeError):
         return ""
+
+def find_closest_match_tfidf(movie_name, movie_titles):
+    combined_titles = [movie_name] + movie_titles
+    
+    title_vectorizer = TfidfVectorizer(stop_words="english")
+    title_vectors = title_vectorizer.fit_transform(combined_titles)
+    
+    similarity_scores = cosine_similarity(title_vectors[0], title_vectors[1:]).flatten()
+    
+    closest_idx = similarity_scores.argmax()
+    return movie_titles[closest_idx], similarity_scores[closest_idx]
 
 print("Loading dataset...")
 movies_data = pd.read_csv("Movie_Dataset.csv", low_memory=False)
@@ -119,18 +129,14 @@ def batch_cosine_similarity(feature_vectors, target_idx, batch_size=1000):
 def get_movie_recommendations(movie_name):
     print(f"\nGetting recommendations for '{movie_name}'...")
     all_titles = movies_data["original_title"].str.lower().tolist()
-    find_close_match = process.extractOne(
-        movie_name, 
-        all_titles,
-        score_cutoff=70
-    )
-    if not find_close_match:
+    closest_match, similarity_score = find_closest_match_tfidf(movie_name, all_titles)
+    
+    if similarity_score < 0.2:  # Threshold to ensure quality match
         print("No close matches found")
         return []
 
-    close_match = find_close_match[0].lower().strip()
-    print(f"Closest match found: '{close_match}'")
-    index_of_the_movie = movies_data[movies_data.original_title == close_match].index[0]
+    print(f"Closest match found: '{closest_match}' (Score: {similarity_score:.4f})")
+    index_of_the_movie = movies_data[movies_data.original_title == closest_match].index[0]
     similarity_scores = batch_cosine_similarity(
         feature_vectors_sparse, target_idx=index_of_the_movie
     )
