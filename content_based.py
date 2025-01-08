@@ -140,7 +140,9 @@ def get_movie_recommendations(movie_name):
             "genres": movies_data.loc[index, 'genres'],
             "production_companies": movies_data.loc[index, 'production_companies'],
             "overview": movies_data.loc[index, 'overview'],
-            "release_date": movies_data.loc[index, 'release_date']
+            "release_date": movies_data.loc[index, 'release_date'],
+            "keywords": movies_data.loc[index, 'keywords'],
+            "tagline": movies_data.loc[index, 'tagline'],
         })
     
     return recommended_movies

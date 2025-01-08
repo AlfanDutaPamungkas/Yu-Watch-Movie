@@ -89,16 +89,16 @@
         <h2 class="title">Hello {{ current_user.name }}, Here are movie recommendations for you 🔥</h2>
         <div class="card-section">
             {% for movie in recommendations %}
-            <div class="card" onclick="openModal('{{ movie.title }}')">
+            <div class="card" onclick="openModal('{{ movie.title | urlencode }}')">
                 <img src="../static/assets/images/not_found.jpg" alt="{{ movie.title }}" class="movie-poster">
                 <div class="card-content">
                     <h3>{{ movie.title }}</h3>
                 </div>
             </div>
 
-            <div id="modal-{{ movie.title }}" class="modal">
+            <div id="modal-{{ movie.title | urlencode }}" class="modal">
                 <div class="modal-content">
-                    <span class="close" onclick="closeModal('{{ movie.title }}')">&times;</span>
+                    <span class="close" onclick="closeModal('{{ movie.title }} | urlencode')">&times;</span>
                     <img src="../static/assets/images/not_found.jpg" alt="{{ movie.title }}" class="movie-poster">
                     <div class="modal-details">
                         <h3>{{ movie.title }}</h3>
@@ -109,6 +109,8 @@
                         <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
                         <p><strong>Production Companies:</strong> {{ movie.production_companies }}</p>
                         <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                        <p><strong>Keywords:</strong> {{ movie.keywords }}</p>
+                        <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
                         <form action="{{ url_for('rate_movie') }}" method="post">
                             <input type="hidden" name="movie_title" value="{{ movie.title }}">
                             <div class="star-rating">
@@ -161,7 +163,7 @@
 
         // Close the modal if the user clicks outside of it
         window.onclick = function(event) {
-            if (event.target.className === "modal") {
+            if (event.target.classList.contains("modal")) {
                 event.target.style.display = "none";
             }
         }
