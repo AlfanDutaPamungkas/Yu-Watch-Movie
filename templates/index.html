@@ -140,13 +140,15 @@
                 <img src="../static/assets/images/not_found.jpg" alt="{{ movie.title }}" class="movie-poster">
                 <div class="modal-details">
                     <h3>{{ movie.title }}</h3>
-                    <p><strong>Vote Average:</strong> {{ movie.vote_average }}</p>
+                    <p><strong>Vote Average:</strong> {{ movie.vote_avg }}</p>
                     <p><strong>Vote Count:</strong> {{ movie.vote_count }}</p>
                     <p><strong>Popularity:</strong> {{ movie.popularity }}</p>
                     <p><strong>Genres:</strong> {{ movie.genres }}</p>
                     <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
                     <p><strong>Production Companies:</strong> {{ movie.production_companies }}</p>
                     <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                    <p><strong>Keywords:</strong> {{ movie.keywords }}</p>
+                    <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
                     <form action="{{ url_for('add_to_watchlist') }}" method="post">
                         <input type="hidden" name="movie_title" value="{{ movie.title }}">
                         <button type="submit" class="btn btn-primary">Add to Watchlist</button>

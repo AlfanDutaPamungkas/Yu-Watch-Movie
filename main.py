@@ -174,6 +174,17 @@ def rate_movie():
         return redirect(url_for("login"))
     
     movie_title = request.form.get("movie_title")
+    
+    vote_avg = float(request.form.get("vote_avg"))
+    vote_count = float(request.form.get("vote_count")) 
+    popularity = float(request.form.get("popularity"))
+    genres = request.form.get("genres")
+    release_date = request.form.get("release_date")
+    production_companies = request.form.get("production_companies")
+    overview = request.form.get("overview")
+    keywords = request.form.get("keywords")
+    tagline = request.form.get("tagline")
+        
     rating = int(request.form.get("rating"))
     referrer = request.form.get("referrer", url_for("home"))
     
@@ -181,7 +192,18 @@ def rate_movie():
     movie = Film.query.filter_by(name=movie_title).first()
     if not movie:
         # If the movie doesn't exist, create it
-        movie = Film(name=movie_title)
+        movie = Film(
+            name=movie_title,
+            vote_avg=vote_avg,
+            vote_count=vote_count,
+            popularity=popularity,
+            genres=genres,
+            release_date=release_date,
+            production_companies=production_companies,
+            overview=overview,
+            keywords=keywords,
+            tagline=tagline
+        )
         db.session.add(movie)
         db.session.commit()
     

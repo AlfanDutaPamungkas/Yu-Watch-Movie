@@ -134,15 +134,15 @@ def get_movie_recommendations(movie_name):
         recommended_movies.append({
             "title": movies_data.loc[index, 'original_title'],
             "poster_url": poster_url,
-            "vote_average": movies_data.loc[index, 'vote_average'],
-            "vote_count": movies_data.loc[index, 'vote_count'],
-            "popularity": movies_data.loc[index, 'popularity'],
-            "genres": movies_data.loc[index, 'genres'],
-            "production_companies": movies_data.loc[index, 'production_companies'],
-            "overview": movies_data.loc[index, 'overview'],
-            "release_date": movies_data.loc[index, 'release_date'],
-            "keywords": movies_data.loc[index, 'keywords'],
-            "tagline": movies_data.loc[index, 'tagline'],
+            "vote_average": movies_data.loc[index, 'vote_average'] if movies_data.loc[index, 'vote_average'] else 0,
+            "vote_count": movies_data.loc[index, 'vote_count'] if movies_data.loc[index, 'vote_count'] else 0,
+            "popularity": movies_data.loc[index, 'popularity'] if movies_data.loc[index, 'popularity'] else 0,
+            "genres": movies_data.loc[index, 'genres'] if movies_data.loc[index, 'genres'] else 'unknown genres',
+            "production_companies": movies_data.loc[index, 'production_companies'] if movies_data.loc[index, 'production_companies'] else 'unknown production companies',
+            "overview": movies_data.loc[index, 'overview'] if movies_data.loc[index, 'overview'] else 'unknown overview',
+            "release_date": movies_data.loc[index, 'release_date'] if movies_data.loc[index, 'release_date'] else 'unknown release date',
+            "keywords": movies_data.loc[index, 'keywords'] if movies_data.loc[index, 'keywords'] else 'unknown keywords',
+            "tagline": movies_data.loc[index, 'tagline'] if movies_data.loc[index, 'tagline'] else 'unknown tagline',
         })
     
     return recommended_movies

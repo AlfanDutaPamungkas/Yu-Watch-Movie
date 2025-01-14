@@ -22,6 +22,15 @@ class Film(db.Model):
     __tablename__ = "films"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    vote_avg = db.Column(db.Float, nullable=False)
+    vote_count = db.Column(db.Float, nullable=False)
+    popularity = db.Column(db.Float, nullable=False)
+    genres = db.Column(db.String(255), nullable=False)
+    release_date = db.Column(db.String(255), nullable=False)
+    production_companies = db.Column(db.String(255), nullable=False)
+    overview = db.Column(db.String(255), nullable=False)
+    keywords = db.Column(db.String(255), nullable=False)
+    tagline = db.Column(db.String(255), nullable=False)
     ratings = db.relationship('FilmRating', backref='film')
     
 class FilmRating(db.Model):

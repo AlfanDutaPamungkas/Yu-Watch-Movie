@@ -111,8 +111,17 @@
                         <p><strong>Overview:</strong> {{ movie.overview }}</p>
                         <p><strong>Keywords:</strong> {{ movie.keywords }}</p>
                         <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
-                        <form action="{{ url_for('rate_movie') }}" method="post">
+                        <form action="{{ url_for( 'rate_movie' ) }}" method="post">
                             <input type="hidden" name="movie_title" value="{{ movie.title }}">
+                            <input type="hidden" name="vote_avg" value="{{ movie.vote_average }}">
+                            <input type="hidden" name="vote_count" value="{{ movie.vote_count }}">
+                            <input type="hidden" name="popularity" value="{{ movie.popularity }}">
+                            <input type="hidden" name="genres" value="{{ movie.genres }}">
+                            <input type="hidden" name="release_date" value="{{ movie.release_date }}">
+                            <input type="hidden" name="production_companies" value="{{ movie.production_companies }}">
+                            <input type="hidden" name="overview" value="{{ movie.overview }}">
+                            <input type="hidden" name="keywords" value="{{ movie.keywords }}">
+                            <input type="hidden" name="tagline" value="{{ movie.tagline }}">
                             <div class="star-rating">
                                 <input id="star-5-{{ movie.title }}" type="radio" name="rating" value="5">
                                 <label for="star-5-{{ movie.title }}" title="5 stars">&#9733;</label>

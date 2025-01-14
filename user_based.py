@@ -64,10 +64,19 @@ def get_user_based_recommendations(user_id, n_recommendations=20, similarity_thr
     # Ambil detail film untuk rekomendasi
     recommended_films = []
     for film_id, predicted_rating in top_recommendations:
-        film = Film.query.get(film_id)
+        film = db.session.get(Film, film_id)
         if film:
             recommended_films.append({
                 "title": film.name,
+                "vote_avg": film.vote_avg,
+                "vote_count": film.vote_count,
+                "popularity": film.popularity,
+                "genres": film.genres,
+                "release_date": film.release_date,
+                "production_companies": film.production_companies,
+                "overview": film.overview,
+                "keywords": film.keywords,
+                "tagline": film.tagline,
                 "poster_url": "../static/assets/images/not_found.jpg",
                 "predicted_rating": round(predicted_rating, 2)
             })
