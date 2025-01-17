@@ -49,14 +49,27 @@ def find_closest_match_tfidf(movie_name, movie_titles):
     closest_idx = similarity_scores.argmax()
     return movie_titles[closest_idx], similarity_scores[closest_idx]
 
+print("Loading dataset...")
 # Muat data dari dataset
 movies_data = pd.read_csv("Movie_Dataset.csv", low_memory=False)
+print(f"Dataset loaded. Shape: {movies_data.shape}")
+print("====================================================================================")
 
 # Isi nilai kosong
+print("\nFilling missing values in 4 features...")
 selected_features = ["genres", "keywords", "production_companies", "tagline"]
 for feature in selected_features:
+    missing_count = movies_data[feature].isnull().sum()
+    print(f"Number of missing values in {feature}: {missing_count}")
+    
+    print(f"Filled missing values in {feature}")
     movies_data[feature] = movies_data[feature].fillna("")
+    
+    missing_count = movies_data[feature].isnull().sum()
+    print(f"Number of missing values in {feature}: {missing_count}")
+    print("====================================================================================\n")
 
+print("\nCleaning columns...")
 # Cleaning kolom original_title
 movies_data["original_title"] = movies_data["original_title"].str.lower().str.strip()
 
@@ -70,9 +83,15 @@ movies_data["keywords"] = movies_data["keywords"].apply(extract_names_with_comma
 movies_data["production_companies"] = movies_data["production_companies"].apply(extract_names_with_comma)
 
 movies_data["tagline"] = movies_data["tagline"].apply(clean_text)
+print("Columns cleaned")
+print("First rows after cleaning columns:")
+print("====================================================================================")
 
+print("\nCombining features...")
 # Gabung selected features
 combined_features =movies_data["original_title"] + " " + movies_data["genres"] + " " + movies_data["keywords"] + " " + movies_data["production_companies"] + " " + movies_data["tagline"]
+print("Features combined")
+print("====================================================================================")
 
 # Ubah text data jadi feature vectors
 vectorizer = TfidfVectorizer(
